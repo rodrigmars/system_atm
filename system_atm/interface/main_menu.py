@@ -22,21 +22,21 @@ def conta_final(cursor: Cursor):
     #     print("Conta não encontrada ou formato inválido! Digite novamente.")
     #     conta_final()
 
-def conta_cliente(id:int):
-    return "SELECT Conta FROM Dados_Bancarios WHERE Conta =:conta_usuario", (id,)
 
+def conta_cliente(conta: str):
+    return "SELECT CONTA FROM DADOS_BANCARIOS WHERE CONTA =:CONTA", (conta,)
 
-def menu():
-    menu = """
-    MENU PRINCIPAL
+# def menu():
+#     menu = """
+#     MENU PRINCIPAL
     
-    1 - Realizar transferência
-    2 - Realizar saque
-    3 - Consultar saldo
-    4 - Realizar depósito
-    5 - Sair
-    """
-    print(menu)
+#     1 - Realizar transferência
+#     2 - Realizar saque
+#     3 - Consultar saldo
+#     4 - Realizar depósito
+#     5 - Sair
+#     """
+#     print(menu)
 
 def consultar_saldo_conta_usuario(cursor, conta_usuario):
     querry =  "SELECT Saldo FROM Dados_Bancarios WHERE Conta =:conta_usuario"
@@ -123,66 +123,73 @@ def menu(conexao: Connection, cursor:Cursor):
     ....selecione uma opção
 
     1 - Informe sua conta  
-    2 - 
-    3 -
-    4 - 
-    5 - 
+    2 - Realizar transferência
+    3 - Realizar saque
+    4 - Consultar saldo
+    5 - Realizar depósito
+    6 - Sair
 
     """)
     
     tentativas = 0
 
-    opcao = 0
-
     while True:
     
-        opcao = int(input("Opção...:?"))
+        match input("Digite sua opção:").strip():
 
-        if opcao == 1:
+            case "1":
 
-            print("tentativas:", tentativas)
+                if tentativas <= 3:
 
-            if tentativas <= 3:
-                id = int(input("Digite sua conta para entrar no sistema: "))                    
+                    conta = input("Digite sua conta para entrar no sistema: ").strip()
 
-                resultado = cursor.execute(*conta_cliente(id)).fetchone()
+                    resultado = cursor.execute(*conta_cliente(conta)).fetchone()
 
-                if resultado is None:
+                    if resultado is None:
 
-                    print(
-                        "Conta não localizada ou formato inválido! Digite novamente.")
+                        print(
+                            "Conta não localizada ou formato inválido! Digite novamente.")
 
-                    tentativas += 1
+                        tentativas += 1
 
-                    if tentativas >= 3:
-                        print("Favor entrar em contato com sua agência!")
-                        break
+                        if tentativas >= 3:
+                            print("Favor entrar em contato com sua agência!")
+                            tentativas = 0
+                            break
 
-                    continue
+                        continue
 
-        if opcao == 1: 
+            case "2": 
 
+                
+                conta_destino = conta_final(cursor)
+
+                transferencia(cursor, consultar_saldo_conta_usuario(cursor, conta_usuario), conta_usuario, consultar_saldo_conta_final(cursor, conta_destino), conta_destino)
+                option = opcoes_finais()
+                
+            case "3":
+                limpar_tela()
+                saque(cursor, conta_usuario, consultar_saldo_conta_usuario(cursor, conta_usuario))
+                option = opcoes_finais()
+
+            case "4":
+                limpar_tela()
+                consultar_saldo(consultar_saldo_conta_usuario(cursor, conta_usuario))
+                option = opcoes_finais()
+
+            case "5":
+                limpar_tela()
+                deposito(cursor, conta_usuario, consultar_saldo_conta_usuario(cursor, conta_usuario))
+                option = opcoes_finais()
+
+            case "6":
+                limpar_tela()
+                operacao = False
             
-            conta_destino = conta_final(cursor)
+            case _:
 
-            transferencia(cursor, consultar_saldo_conta_usuario(cursor, conta_usuario), conta_usuario, consultar_saldo_conta_final(cursor, conta_destino), conta_destino)
-            opcao = opcoes_finais()
-            
-        if opcao == 2:
-            limpar_tela()
-            saque(cursor, conta_usuario, consultar_saldo_conta_usuario(cursor, conta_usuario))
-            opcao = opcoes_finais()
-
-        if opcao == 3:
-            limpar_tela()
-            consultar_saldo(consultar_saldo_conta_usuario(cursor, conta_usuario))
-            opcao = opcoes_finais()
-
-        if opcao == 4:
-            limpar_tela()
-            deposito(cursor, conta_usuario, consultar_saldo_conta_usuario(cursor, conta_usuario))
-            opcao = opcoes_finais()
-
-        if opcao == 5:
-            limpar_tela()
-            operacao = False
+                if tentativas >= 3:
+                    print("Opção de menu inválida")
+                    break
+                else:
+                    print("Opção de menu inválida")
