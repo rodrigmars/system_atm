@@ -186,6 +186,7 @@ def menu(conexao: Connection, cursor:Cursor):
                 limpar_tela()
                 operacao = False
             
+
             case _:
 
                 if tentativas >= 3:
@@ -193,3 +194,7 @@ def menu(conexao: Connection, cursor:Cursor):
                     break
                 else:
                     print("Opção de menu inválida")
+
+print("alterei")
+
+
