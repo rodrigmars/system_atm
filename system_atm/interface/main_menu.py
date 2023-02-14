@@ -186,3 +186,6 @@ def menu(conexao: Connection, cursor:Cursor):
         if opcao == 5:
             limpar_tela()
             operacao = False
+
+print("alterei")
+
