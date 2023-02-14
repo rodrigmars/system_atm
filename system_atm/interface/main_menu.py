@@ -189,3 +189,4 @@ def menu(conexao: Connection, cursor:Cursor):
 
 print("alterei")
 
+
