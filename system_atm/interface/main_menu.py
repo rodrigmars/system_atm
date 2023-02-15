@@ -1,6 +1,5 @@
 from config import system, name, Connection, connect, Cursor
 
-
 def limpar_tela():
 
     system('cls') if name.lower() == 'nt' else system('clear')
@@ -25,18 +24,6 @@ def conta_final(cursor: Cursor):
 
 def conta_cliente(conta: str):
     return "SELECT CONTA FROM DADOS_BANCARIOS WHERE CONTA =:CONTA", (conta,)
-
-# def menu():
-#     menu = """
-#     MENU PRINCIPAL
-    
-#     1 - Realizar transferência
-#     2 - Realizar saque
-#     3 - Consultar saldo
-#     4 - Realizar depósito
-#     5 - Sair
-#     """
-#     print(menu)
 
 def consultar_saldo_conta_usuario(cursor, conta_usuario):
     querry =  "SELECT Saldo FROM Dados_Bancarios WHERE Conta =:conta_usuario"
@@ -63,7 +50,6 @@ def transferencia(cursor, saldo_usuario, conta_usuario, saldo_usuario_final, con
         cursor.execute(querry_acrescentar, (valor_acrescido, conta_usuario_final,))
         
         print("Transferência executada com sucesso!")
-        conexao.commit()
         
     else:
         print("Saldo insuficiente!")
@@ -78,7 +64,7 @@ def saque(cursor, conta_usuario, saldo_usuario):
         cursor.execute(querry, (valor_debitado, conta_usuario,))
         
         print("Saque efetuado com sucesso!")
-        conexao.commit()
+
         limpar_tela()
         
     else:
@@ -95,7 +81,6 @@ def deposito (cursor, conta_usuario, saldo_usuario):
     cursor.execute(querry, (valor_acrescido, conta_usuario))
 
     print("Deposito efetuado com sucesso!")
-    conexao.commit()
 
 def opcoes_finais():
     
