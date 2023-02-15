@@ -95,7 +95,7 @@ def menu(create_user_case: dict,
 
                 message = "Informe uma conta válida: "
 
-                for _ in range(3):
+                for i in range(3):
 
                     primary_account = input(message).strip()
 
@@ -104,9 +104,10 @@ def menu(create_user_case: dict,
                     if primary_account is None:
 
                         message = "Conta não localizada! Digite novamente: "
-
-                if primary_account is None:
-                    raise Exception("Favor entrar em contato com sua agência!")
+                    
+                    if i >= 2:
+                        raise Exception(
+                            "Favor entrar em contato com sua agência!")
 
             case "2": 
                 

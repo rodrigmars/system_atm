@@ -48,7 +48,7 @@ def main():
 
     except Exception:
 
-        print(traceback.print_exc())
+        traceback.print_exc()
 
         if conexao:
             conexao.rollback()
