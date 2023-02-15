@@ -98,7 +98,7 @@ def opcoes_finais():
 
 # Executando ATM
 
-def menu(conexao: Connection, cursor:Cursor):
+def menu(cursor:Cursor):
 
     limpar_tela()
 
@@ -115,9 +115,9 @@ def menu(conexao: Connection, cursor:Cursor):
     6 - Sair
 
     """)
+                    
+    bank_account: str | None = None
     
-    tentativas_conta = 0
-
     invalid_option_attempts = 0
 
     while True:
@@ -126,49 +126,52 @@ def menu(conexao: Connection, cursor:Cursor):
 
             case "1":
 
-                if tentativas_conta <= 3:
+                message = "Informe uma conta válida: "
 
-                    conta = input("Digite sua conta para entrar no sistema: ").strip()
+                for _ in range(3):
 
-                    resultado = cursor.execute(*conta_cliente(conta)).fetchone()
+                    bank_account = input(message).strip()
 
-                    if resultado is None:
+                    bank_account = cursor.execute(*conta_cliente(bank_account)).fetchone()
 
-                        print(
-                            "Conta não localizada ou formato inválido! Digite novamente.")
+                    if bank_account is None:
 
-                        tentativas_conta += 1
+                        message = "Conta não localizada! Digite novamente: "
 
-                        if tentativas_conta >= 3:
-                            print("Favor entrar em contato com sua agência!")
-                            tentativas_conta = 0
-                            break
-
-                        continue
+                if bank_account is None:
+                    raise Exception("Favor entrar em contato com sua agência!")
 
             case "2": 
 
                 conta_destino = conta_final(cursor)
 
-                transferencia(cursor, consultar_saldo_conta_usuario(cursor, conta_usuario), conta_usuario, consultar_saldo_conta_final(cursor, conta_destino), conta_destino)
+                transferencia(cursor, 
+                            consultar_saldo_conta_usuario(cursor, bank_account), 
+                            bank_account, consultar_saldo_conta_final(cursor, conta_destino), 
+                            conta_destino)
+                
                 option = opcoes_finais()
                 
             case "3":
                 
                 limpar_tela()
-                saque(cursor, conta_usuario, consultar_saldo_conta_usuario(cursor, conta_usuario))
+                
+                saque(cursor, 
+                      bank_account, 
+                      consultar_saldo_conta_usuario(cursor, bank_account))
+                
                 option = opcoes_finais()
 
             case "4":
                 
                 limpar_tela()
-                consultar_saldo(consultar_saldo_conta_usuario(cursor, conta_usuario))
+                consultar_saldo(consultar_saldo_conta_usuario(cursor, bank_account))
                 option = opcoes_finais()
 
             case "5":
                 
                 limpar_tela()
-                deposito(cursor, conta_usuario, consultar_saldo_conta_usuario(cursor, conta_usuario))
+                deposito(cursor, bank_account, consultar_saldo_conta_usuario(cursor, bank_account))
                 option = opcoes_finais()
 
             case "6":

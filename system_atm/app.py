@@ -60,8 +60,7 @@ def main():
 
         conexao.commit()
 
-
-        menu(conexao, cursor)
+        menu(cursor)
 
     except Exception:
 
