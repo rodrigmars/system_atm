@@ -4,9 +4,12 @@ import traceback
 from config import Connection, connect
 
 from interface.menu_adapter import menu
-from domain.entities.customer import Customer
-from infrastructure.repositories.customer_repository import customer_respository
+from infrastructure.repositories.customer_repository import customer_repository
 from infrastructure.repositories.repository import repository
+from application.usercases.customer.create_user_case import create_user_case
+from application.usercases.customer.get_account_user_case import get_account_user_case
+from application.usercases.customer.execute_transfer_use_case import execute_transfer_use_case
+
 
 def create_tables() -> str:
 
@@ -37,17 +40,11 @@ def main():
 
         cursor.executescript(create_tables())
 
-        customer_repo = customer_respository(repository(cursor))
+        customer_repo = customer_repository(repository(cursor))
 
-        id = customer_repo["create"](Customer("Vitória Bianca Viana", "38353-9", 150.0))
-
-        customer = customer_repo["find_by_id"](id)
-
-        print("customer", customer)
-
-        conexao.commit()
-
-        menu(customer_repo)
+        menu(create_user_case(customer_repo),
+             get_account_user_case(customer_repo),
+             execute_transfer_use_case(customer_repo))
 
     except Exception:
 

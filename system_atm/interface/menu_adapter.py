@@ -1,3 +1,4 @@
+from typing import Callable
 from config import system, name, Connection, connect, Cursor
 
 def limpar_tela():
@@ -85,9 +86,12 @@ def opcoes_finais():
 # Executando ATM
 
 
-def menu(customer_repo: dict):
 
-    bank_account: str | None = None
+def menu(create_user_case: dict, 
+         get_account_user_case: Callable[[str], str], 
+         execute_transfer_use_case:Callable[[str, str, float], str]):
+    
+    primary_account: str | None = None
     
     total_attempts = 0
 
@@ -117,52 +121,61 @@ def menu(customer_repo: dict):
 
                 for _ in range(3):
 
-                    bank_account = customer_repo["find_by_account"](input(message).strip())
+                    primary_account = input(message).strip()
 
-                    if bank_account is None:
+                    primary_account = get_account_user_case(primary_account)
+
+                    if primary_account is None:
 
                         message = "Conta não localizada! Digite novamente: "
 
-                if bank_account is None:
+                if primary_account is None:
                     raise Exception("Favor entrar em contato com sua agência!")
 
             case "2": 
+                
+                if primary_account:
 
-                conta_destino = input("Digite a conta de destino: ").strip()
+                    secondary_account = input(
+                        "Digite a conta de destino: ").strip()
 
-                valor_transferencia = input(
-                    "Digite o valor que seja transferir: ").strip()
+                    valor_transferencia = input(
+                        "Digite o valor que seja transferir: ").strip()
 
-                conta_destino = customer_repo["find_by_account"](conta_destino)
+                    response = execute_transfer_use_case(primary_account,
+                                                         secondary_account,
+                                                         float(valor_transferencia))
 
-                transferencia(consultar_saldo_conta_usuario(bank_account),
-                              bank_account,
-                              consultar_saldo_conta_final(conta_destino),
-                              conta_destino, float(valor_transferencia))
+                    print(response)
 
-                option = opcoes_finais()
+                else:
+                    print("Informe sua conta para transferência")
 
             case "3":
                 
                 limpar_tela()
                 
-                saque(cursor, 
-                      bank_account, 
-                      consultar_saldo_conta_usuario(cursor, bank_account))
+                # saque(cursor, 
+                #       primary_account, 
+                #       consultar_saldo_conta_usuario(cursor, primary_account))
                 
-                option = opcoes_finais()
+                # option = opcoes_finais()
+
+                pass
 
             case "4":
                 
-                limpar_tela()
-                consultar_saldo(consultar_saldo_conta_usuario(cursor, bank_account))
-                option = opcoes_finais()
+                # limpar_tela()
+                # consultar_saldo(consultar_saldo_conta_usuario(cursor, primary_account))
+                # option = opcoes_finais()
+                pass
 
             case "5":
                 
-                limpar_tela()
-                deposito(cursor, bank_account, consultar_saldo_conta_usuario(cursor, bank_account))
-                option = opcoes_finais()
+                # limpar_tela()
+                # deposito(cursor, primary_account, consultar_saldo_conta_usuario(cursor, primary_account))
+                # option = opcoes_finais()
+                pass
 
             case "6":
 
