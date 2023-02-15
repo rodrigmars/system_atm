@@ -5,23 +5,6 @@ def limpar_tela():
     system('cls') if name.lower() == 'nt' else system('clear')
 
 
-def conta_final(cursor: Cursor):
-
-    conta_usuario_final = int(input("Digite a conta de destino: "))
-
-    querry = "SELECT Conta FROM Dados_Bancarios WHERE Conta =:conta_usuario_final"
-
-    resultado = cursor.execute(querry, (conta_usuario_final,)).fetchone()[0]
-    
-    if resultado != "":
-        return conta_usuario_final
-        
-    # except:
-    #     limpar_tela()
-    #     print("Conta não encontrada ou formato inválido! Digite novamente.")
-    #     conta_final()
-
-
 def conta_cliente(conta: str):
     return "SELECT CONTA FROM DADOS_BANCARIOS WHERE CONTA =:CONTA", (conta,)
 
@@ -35,11 +18,14 @@ def consultar_saldo_conta_final(cursor, conta_usuario_final):
     saldo_usuario_final = cursor.execute(querry, (conta_usuario_final,)).fetchone()[0]
     return saldo_usuario_final
 
-def transferencia(cursor, saldo_usuario, conta_usuario, saldo_usuario_final, conta_usuario_final):
-    
-    valor_da_transferencia = int(input("Digite o valor que seja transferir: "))
 
-    if saldo_usuario >= valor_da_transferencia:
+def transferencia(saldo_usuario: float,
+                  conta_usuario: str,
+                  saldo_usuario_final: float,
+                  conta_usuario_final: str,
+                  valor_transferencia: float):
+
+    if saldo_usuario >= valor_transferencia:
         
         valor_debitado = saldo_usuario - valor_da_transferencia
         querry_debitar = "UPDATE Dados_Bancarios SET Saldo =:valor_debitado WHERE Conta =:conta_usuario"
@@ -98,7 +84,8 @@ def opcoes_finais():
 
 # Executando ATM
 
-def menu(cursor:Cursor):
+
+def menu(customer_repo: dict):
 
     bank_account: str | None = None
     
@@ -129,8 +116,8 @@ def menu(cursor:Cursor):
                 message = "Informe uma conta válida: "
 
                 for _ in range(3):
-                    
-                    bank_account = cursor.execute(*conta_cliente(input(message).strip())).fetchone()
+
+                    bank_account = customer_repo["find_by_account"](input(message).strip())
 
                     if bank_account is None:
 
@@ -141,15 +128,20 @@ def menu(cursor:Cursor):
 
             case "2": 
 
-                conta_destino = conta_final(cursor)
+                conta_destino = input("Digite a conta de destino: ").strip()
 
-                transferencia(cursor, 
-                            consultar_saldo_conta_usuario(cursor, bank_account), 
-                            bank_account, consultar_saldo_conta_final(cursor, conta_destino), 
-                            conta_destino)
-                
+                valor_transferencia = input(
+                    "Digite o valor que seja transferir: ").strip()
+
+                conta_destino = customer_repo["find_by_account"](conta_destino)
+
+                transferencia(consultar_saldo_conta_usuario(bank_account),
+                              bank_account,
+                              consultar_saldo_conta_final(conta_destino),
+                              conta_destino, float(valor_transferencia))
+
                 option = opcoes_finais()
-                
+
             case "3":
                 
                 limpar_tela()

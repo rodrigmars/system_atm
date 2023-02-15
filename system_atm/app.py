@@ -47,7 +47,7 @@ def main():
 
         conexao.commit()
 
-        menu(cursor)
+        menu(customer_repo)
 
     except Exception:
 
