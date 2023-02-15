@@ -1,8 +1,12 @@
 
+import traceback
+
 from config import Connection, connect
 
-from interface.main_menu import menu
-import traceback
+from interface.menu_adapter import menu
+from domain.entities.customer import Customer
+from infrastructure.repositories.customer_repository import customer_respository
+from infrastructure.repositories.repository import repository
 
 def create_tables() -> str:
 
@@ -21,27 +25,6 @@ def create_tables() -> str:
     COMMIT;
     """
 
-class Customer:
-    
-    def __init__(self, nome: str, conta: str, saldo: float) -> None:
-
-        self.nome = nome
-        self.conta = conta
-        self.saldo = saldo
-
-
-def crete_customer(customer: Customer) -> tuple[str, tuple[str, str, float]]:
-    return """
-    INSERT INTO DADOS_BANCARIOS(NOME, CONTA, SALDO) VALUES(:NOME, :CONTA, :SALDO)
-    """, (customer.nome, customer.conta, customer.saldo)
-
-
-def find_by_id(id: int) -> tuple:
-    return """
-    SELECT * FROM DADOS_BANCARIOS WHERE ID=:ID
-    """, (id, )
-
-
 def main():
 
     conexao: Connection | None = None
@@ -54,9 +37,13 @@ def main():
 
         cursor.executescript(create_tables())
 
-        id = cursor.execute(*crete_customer(Customer("Vitória Bianca Viana", "38353-9", 150.0))).rowcount
+        customer_repo = customer_respository(repository(cursor))
 
-        customer = cursor.execute(*find_by_id(id)).fetchone()
+        id = customer_repo["create"](Customer("Vitória Bianca Viana", "38353-9", 150.0))
+
+        customer = customer_repo["find_by_id"](id)
+
+        print("customer", customer)
 
         conexao.commit()
 
