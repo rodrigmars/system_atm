@@ -85,11 +85,11 @@ def deposito (cursor, conta_usuario, saldo_usuario):
 def opcoes_finais():
     
     print("\nDigite 0 para voltar ao menu incial e 5 para sair!")
-    op = int(input("Digite sua opção: "))
+    opcao = int(input("Digite sua opção: "))
  
-    if op == 5: 
+    if opcao == 5: 
         opcao = 5
-    elif op == 0:
+    elif opcao == 0:
         opcao = 0
     else:
         "Opção invalida"
@@ -179,18 +179,15 @@ def menu(cursor:Cursor):
                 if input("Confirme sim(Y) para sair...").strip().upper() in ("Y", "S", "SIM", "OK"):
                     break
                 else:
-                    for i in range(3):
+                    for _ in range(3):
                         if input("Opção inválida, informe sim(Y) para sair ou não(N) para cancelar...")\
                                 .strip().upper() in ("Y", "YES", "S", "SIM", "OK", "N", "NO", "NOT"):
                             break
 
             case _:
 
-                if invalid_option_attempts >= 2:
-                    
-                    print("Você excedeu um número total de tentativas")
-                    
-                    break
+                if invalid_option_attempts >= 2:                    
+                    raise Exception("Você excedeu um número total de tentativas")
                 
                 else:
 
