@@ -131,7 +131,9 @@ def menu(conexao: Connection, cursor:Cursor):
 
     """)
     
-    tentativas = 0
+    tentativas_conta = 0
+
+    tentativas_invalid_option = 0
 
     while True:
     
@@ -139,7 +141,7 @@ def menu(conexao: Connection, cursor:Cursor):
 
             case "1":
 
-                if tentativas <= 3:
+                if tentativas_conta <= 3:
 
                     conta = input("Digite sua conta para entrar no sistema: ").strip()
 
@@ -150,51 +152,55 @@ def menu(conexao: Connection, cursor:Cursor):
                         print(
                             "Conta não localizada ou formato inválido! Digite novamente.")
 
-                        tentativas += 1
+                        tentativas_conta += 1
 
-                        if tentativas >= 3:
+                        if tentativas_conta >= 3:
                             print("Favor entrar em contato com sua agência!")
-                            tentativas = 0
+                            tentativas_conta = 0
                             break
 
                         continue
 
             case "2": 
 
-                
                 conta_destino = conta_final(cursor)
 
                 transferencia(cursor, consultar_saldo_conta_usuario(cursor, conta_usuario), conta_usuario, consultar_saldo_conta_final(cursor, conta_destino), conta_destino)
                 option = opcoes_finais()
                 
             case "3":
+                
                 limpar_tela()
                 saque(cursor, conta_usuario, consultar_saldo_conta_usuario(cursor, conta_usuario))
                 option = opcoes_finais()
 
             case "4":
+                
                 limpar_tela()
                 consultar_saldo(consultar_saldo_conta_usuario(cursor, conta_usuario))
                 option = opcoes_finais()
 
             case "5":
+                
                 limpar_tela()
                 deposito(cursor, conta_usuario, consultar_saldo_conta_usuario(cursor, conta_usuario))
                 option = opcoes_finais()
 
             case "6":
+                
                 limpar_tela()
                 operacao = False
-            
 
             case _:
 
-                if tentativas >= 3:
-                    print("Opção de menu inválida")
+                if tentativas_invalid_option >= 2:
+                    
+                    print("Você excedeu um número total de tentativas")
+                    
                     break
+                
                 else:
+
                     print("Opção de menu inválida")
 
-print("alterei")
-
-
+                    tentativas_invalid_option += 1
