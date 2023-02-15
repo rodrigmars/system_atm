@@ -54,6 +54,8 @@ def deposito(cursor, conta_usuario, saldo_usuario):
 
     print("Deposito efetuado com sucesso!")
 
+from dataclasses import dataclass
+
 
 def opcoes_finais():
 
@@ -69,13 +71,20 @@ def opcoes_finais():
 
     return opcao
 
+import re
+
+@dataclass(frozen=False)
+class CustomerDTO():
+    name: str
+    account: str
+    balance: str
 
 class CustomerDictionary(TypedDict):
     nome: str
     conta: str
     saldo: str
 
-def check_fields(fields: dict) -> tuple[bool, dict]:
+def check_fields(customer: CustomerDTO) -> tuple[bool, CustomerDTO]:
 
     fail = False
 
@@ -85,33 +94,26 @@ def check_fields(fields: dict) -> tuple[bool, dict]:
         except:
             return False
 
-    if len(fields["nome"][0]) < 1:
-        message = fields["nome"][1] if fields["nome"][1] else "\nInforme um nome: "
-        fields.update(
-            {"nome": [input(message).strip(), "\nNome necessário para cadastro: "]})
-        fail = True
-    elif len(fields["nome"][0]) <= 10:
-
-        message = "\nNome deve possuir no mínimo 10 caracteres: "
-        
-        fields.update(
-            {"nome": [input(message), message]})
-
+    if len(customer.name) < 10:
+        customer.name = input(
+            '\nNome deve possuir no mínimo 10 caracteres: ').strip()
         fail = True
 
-    if len(fields["conta"][0]) < 1:
-        message = fields["conta"][1] if fields["conta"][1] else "\nInforme uma conta: "
-        fields.update(
-            {"conta": [input(message).strip(), "\nInforme uma conta válida: "]})
+    elif re.match(r'^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$', customer.name) is None:
+        customer.name = input(
+            '\nNome deve possuir apenas caracteres válidos: ').strip()
         fail = True
 
-    if isFloat(fields["saldo"][0]) is False:
-        message = fields["saldo"][1] if fields["saldo"][1] else "\nInforme um saldo: "
-        fields.update(
-            {"saldo": [input(message).strip(), "\nInforme um saldo válido: "]})
+    if re.match(r'\d{5}-\d{1}$', customer.account) is None:
+        customer.account = input(
+            '\nConta deve obedecer o formato 00000-0: ').strip()
         fail = True
 
-    return fail, fields
+    if isFloat(customer.balance) is False:
+        customer.balance = input("Informe um valor decimal para saldo: ").strip()
+        fail = True
+
+    return fail, customer
 
 
 # Executando ATM
@@ -211,25 +213,24 @@ def menu(get_account_user_case: Callable[[str], str],
 
             case "6":
 
-                fields = {"nome": ["",""],
-                          "conta": ["",""],
-                          "saldo": ["",""]}
+                customer = CustomerDTO(input('\nInforme um nome: ').strip(),
+                                       input(
+                                           '\nInforme uma conta no modelo 00000-0: ').strip(),
+                                       input('\nInforme um saldo: ').strip())
 
                 while True:
                     
-                    fail, fields = check_fields(fields)
+                    fail, customer = check_fields(customer)
 
                     if fail:
                         print(
                             "\n>>> Ocorrências identificadas no cadastro de conta! <<<")
                     else:
                         create_customer_user_case(
-                            (fields["nome"][0],
-                             fields["conta"][0],
-                             float(fields["saldo"][0])))
+                            (customer.name, customer.account, customer.balance))
 
                         print(
-                            f"\nConta {fields['conta'][0]} cadastrada com sucesso !!!")
+                            f"\nConta {customer.account} cadastrada com sucesso !!!")
 
                         break
 
