@@ -100,6 +100,10 @@ def opcoes_finais():
 
 def menu(cursor:Cursor):
 
+    bank_account: str | None = None
+    
+    total_attempts = 0
+
     limpar_tela()
 
     print("""
@@ -116,10 +120,6 @@ def menu(cursor:Cursor):
 
     """)
                     
-    bank_account: str | None = None
-    
-    invalid_option_attempts = 0
-
     while True:
     
         match input("Digite uma opção:").strip():
@@ -129,10 +129,8 @@ def menu(cursor:Cursor):
                 message = "Informe uma conta válida: "
 
                 for _ in range(3):
-
-                    bank_account = input(message).strip()
-
-                    bank_account = cursor.execute(*conta_cliente(bank_account)).fetchone()
+                    
+                    bank_account = cursor.execute(*conta_cliente(input(message).strip())).fetchone()
 
                     if bank_account is None:
 
@@ -176,21 +174,22 @@ def menu(cursor:Cursor):
 
             case "6":
 
-                if input("Confirme sim(Y) para sair...").strip().upper() in ("Y", "S", "SIM", "OK"):
-                    break
-                else:
-                    for _ in range(3):
-                        if input("Opção inválida, informe sim(Y) para sair ou não(N) para cancelar...")\
-                                .strip().upper() in ("Y", "YES", "S", "SIM", "OK", "N", "NO", "NOT"):
-                            break
+                message = "Confirme sim(Y) para sair..."
+
+                for _ in range(3):
+                    if input(message)\
+                            .strip().upper() in ("Y", "YES", "S", "SIM", "OK", "N", "NO", "NOT"):
+                        break
+                    else:
+                        message = "Opção inválida, informe sim(Y) para sair ou não(N) para cancelar..."
 
             case _:
 
-                if invalid_option_attempts >= 2:                    
+                if total_attempts >= 2:                    
                     raise Exception("Você excedeu um número total de tentativas")
                 
                 else:
 
                     print("Opção de menu inválida")
 
-                    invalid_option_attempts += 1
+                    total_attempts += 1
