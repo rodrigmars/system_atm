@@ -133,11 +133,11 @@ def menu(conexao: Connection, cursor:Cursor):
     
     tentativas_conta = 0
 
-    tentativas_invalid_option = 0
+    invalid_option_attempts = 0
 
     while True:
     
-        match input("Digite sua opção:").strip():
+        match input("Digite uma opção:").strip():
 
             case "1":
 
@@ -187,13 +187,18 @@ def menu(conexao: Connection, cursor:Cursor):
                 option = opcoes_finais()
 
             case "6":
-                
-                limpar_tela()
-                operacao = False
+
+                if input("Confirme sim(Y) para sair...").strip().upper() in ("Y", "S", "SIM", "OK"):
+                    break
+                else:
+                    for i in range(3):
+                        if input("Opção inválida, informe sim(Y) para sair ou não(N) para cancelar...")\
+                                .strip().upper() in ("Y", "YES", "S", "SIM", "OK", "N", "NO", "NOT"):
+                            break
 
             case _:
 
-                if tentativas_invalid_option >= 2:
+                if invalid_option_attempts >= 2:
                     
                     print("Você excedeu um número total de tentativas")
                     
@@ -203,4 +208,4 @@ def menu(conexao: Connection, cursor:Cursor):
 
                     print("Opção de menu inválida")
 
-                    tentativas_invalid_option += 1
+                    invalid_option_attempts += 1
