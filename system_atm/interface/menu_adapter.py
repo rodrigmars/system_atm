@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Dict, TypedDict
 from config import system, name, Connection, connect, Cursor
 
 
@@ -68,6 +68,43 @@ def opcoes_finais():
         "Opção invalida"
 
     return opcao
+
+
+class CustomerDictionary(TypedDict):
+    nome: str
+    conta: str
+    saldo: str
+
+def check_filds(fields: dict) -> tuple[bool, dict]:
+
+    fail = False
+
+    def isFloat(value):
+        try:
+            return True if float(value) else False
+        except:
+            return False
+
+    if len(fields["nome"][0]) < 1:
+        message = fields["nome"][1] if fields["nome"][1] else "\nInforme um nome: "
+        fields.update(
+            {"nome": [input(message).strip(), "\nNome necessário para cadastro: "]})
+        fail = True
+
+    if len(fields["conta"][0]) < 1:
+        message = fields["conta"][1] if fields["conta"][1] else "\nInforme uma conta: "
+        fields.update(
+            {"conta": [input(message).strip(), "\nInforme uma conta válida: "]})
+        fail = True
+
+    if isFloat(fields["saldo"][0]) is False:
+        message = fields["saldo"][1] if fields["saldo"][1] else "\nInforme um saldo: "
+        fields.update(
+            {"saldo": [input(message).strip(), "\nInforme um saldo válido: "]})
+        fail = True
+
+    return fail, fields
+
 
 # Executando ATM
 
@@ -165,31 +202,26 @@ def menu(get_account_user_case: Callable[[str], str],
                 pass
 
             case "6":
-                
+
+                fields = {"nome": ["",""],
+                          "conta": ["",""],
+                          "saldo": ["",""]}
+
                 while True:
                     
-                    name = input("\nInforme um nome:").strip()
-                    account = input("\nInforme uma conta:").strip()
-                    balance = input("\nInforme um saldo:").strip()
+                    fail, fields = check_filds(fields)
 
-                    fields = {"nome": name, "conta": account, "saldo": balance}
-
-                    errors = []
-
-                    for k, v in fields.items():
-                        if len(v) < 1:
-                            errors.append(f"Inform um valor para o campo {k}")
-
-                    if errors != []:
-                        print("\nFalha no cadastro:", errors)
-
-                        for erro in errors:
-                            print(erro)
+                    if fail:
+                        print(
+                            "\n>>> Ocorrências identificadas no cadastro de conta! <<<")
                     else:
-                        create_customer_user_case(tuple(fields.values()))
+                        create_customer_user_case(
+                            (fields["nome"][0],
+                             fields["conta"][0],
+                             fields["saldo"][0]))
 
-                        print(f"\nConta {account} cadastrada com sucesso")
-                        print("-----------------------------")
+                        print(
+                            f"\nConta {fields['conta'][0]} cadastrada com sucesso !!!")
 
                         break
 
