@@ -19,28 +19,6 @@ def consultar_saldo_conta_final(cursor, conta_usuario_final):
     saldo_usuario_final = cursor.execute(querry, (conta_usuario_final,)).fetchone()[0]
     return saldo_usuario_final
 
-
-def transferencia(saldo_usuario: float,
-                  conta_usuario: str,
-                  saldo_usuario_final: float,
-                  conta_usuario_final: str,
-                  valor_transferencia: float):
-
-    if saldo_usuario >= valor_transferencia:
-        
-        valor_debitado = saldo_usuario - valor_da_transferencia
-        querry_debitar = "UPDATE Dados_Bancarios SET Saldo =:valor_debitado WHERE Conta =:conta_usuario"
-        cursor.execute(querry_debitar, (valor_debitado, conta_usuario,))
-        
-        valor_acrescido = saldo_usuario_final + valor_da_transferencia
-        querry_acrescentar = "UPDATE Dados_Bancarios SET Saldo =:valor_acrescido WHERE Conta =:conta_usuario_final"
-        cursor.execute(querry_acrescentar, (valor_acrescido, conta_usuario_final,))
-        
-        print("Transferência executada com sucesso!")
-        
-    else:
-        print("Saldo insuficiente!")
-        
 def saque(cursor, conta_usuario, saldo_usuario):
     valor_do_saque = int(input("Digite o valor do saque: "))
     
