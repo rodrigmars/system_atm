@@ -3,12 +3,12 @@ from domain.entities.customer import Customer
 
 def customer_repository(repository: dict) -> dict:
 
-    def create(customer: Customer) -> int:
+    def create(customer: tuple) -> int:
         query = """
         INSERT INTO DADOS_BANCARIOS(NOME, CONTA, SALDO) \
             VALUES(:NOME, :CONTA, :SALDO)
         """
-        return repository["execute"](query, (customer.nome, customer.conta, customer.saldo)).rowcount
+        return repository["execute"](query, customer).rowcount
 
     def find_by_id(id: int) -> tuple:
 
