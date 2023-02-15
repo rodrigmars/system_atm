@@ -75,7 +75,7 @@ class CustomerDictionary(TypedDict):
     conta: str
     saldo: str
 
-def check_filds(fields: dict) -> tuple[bool, dict]:
+def check_fields(fields: dict) -> tuple[bool, dict]:
 
     fail = False
 
@@ -89,6 +89,14 @@ def check_filds(fields: dict) -> tuple[bool, dict]:
         message = fields["nome"][1] if fields["nome"][1] else "\nInforme um nome: "
         fields.update(
             {"nome": [input(message).strip(), "\nNome necessário para cadastro: "]})
+        fail = True
+    elif len(fields["nome"][0]) <= 10:
+
+        message = "\nNome deve possuir no mínimo 10 caracteres: "
+        
+        fields.update(
+            {"nome": [input(message), message]})
+
         fail = True
 
     if len(fields["conta"][0]) < 1:
@@ -209,7 +217,7 @@ def menu(get_account_user_case: Callable[[str], str],
 
                 while True:
                     
-                    fail, fields = check_filds(fields)
+                    fail, fields = check_fields(fields)
 
                     if fail:
                         print(
@@ -218,7 +226,7 @@ def menu(get_account_user_case: Callable[[str], str],
                         create_customer_user_case(
                             (fields["nome"][0],
                              fields["conta"][0],
-                             fields["saldo"][0]))
+                             float(fields["saldo"][0])))
 
                         print(
                             f"\nConta {fields['conta'][0]} cadastrada com sucesso !!!")
