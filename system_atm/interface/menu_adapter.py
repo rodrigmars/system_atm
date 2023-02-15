@@ -84,7 +84,8 @@ class CustomerDictionary(TypedDict):
     conta: str
     saldo: str
 
-def check_fields(customer: CustomerDTO) -> tuple[bool, CustomerDTO]:
+
+def check_fields(customer: CustomerDTO) -> bool:
 
     fail = False
 
@@ -113,7 +114,7 @@ def check_fields(customer: CustomerDTO) -> tuple[bool, CustomerDTO]:
         customer.balance = input("Informe um valor decimal para saldo: ").strip()
         fail = True
 
-    return fail, customer
+    return fail
 
 
 # Executando ATM
@@ -219,10 +220,8 @@ def menu(get_account_user_case: Callable[[str], str],
                                        input('\nInforme um saldo: ').strip())
 
                 while True:
-                    
-                    fail, customer = check_fields(customer)
 
-                    if fail:
+                    if check_fields(customer):
                         print(
                             "\n>>> Ocorrências identificadas no cadastro de conta! <<<")
                     else:
