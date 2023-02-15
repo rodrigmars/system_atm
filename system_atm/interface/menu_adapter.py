@@ -63,8 +63,6 @@ def opcoes_finais():
 
 # Executando ATM
 
-
-
 def menu(create_user_case: dict, 
          get_account_user_case: Callable[[str], str], 
          execute_transfer_use_case:Callable[[str, str, float], str]):
@@ -159,12 +157,16 @@ def menu(create_user_case: dict,
 
                 message = "Confirme sim(Y) para sair..."
 
-                for _ in range(3):
+                for i in range(3):
                     if input(message)\
                             .strip().upper() in ("Y", "YES", "S", "SIM", "OK", "N", "NO", "NOT"):
                         break
                     else:
                         message = "Opção inválida, informe sim(Y) para sair ou não(N) para cancelar..."
+
+                    if i >= 2:
+                        print(
+                            "\n>> Você atingiu um número máximo de tentativas, selecione uma opção de menu...\n")
 
             case _:
 
