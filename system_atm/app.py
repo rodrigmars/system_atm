@@ -1,8 +1,15 @@
 
+import traceback
+
 from config import Connection, connect
 
-from interface.main_menu import menu
-import traceback
+from interface.menu_adapter import menu
+from infrastructure.repositories.customer_repository import customer_repository
+from infrastructure.repositories.repository import repository
+from application.usercases.customer.create_user_case import create_customer_user_case
+from application.usercases.customer.get_account_user_case import get_account_user_case
+from application.usercases.customer.execute_transfer_use_case import execute_transfer_use_case
+
 
 def create_tables() -> str:
 
@@ -21,27 +28,6 @@ def create_tables() -> str:
     COMMIT;
     """
 
-class Customer:
-    
-    def __init__(self, nome: str, conta: str, saldo: float) -> None:
-
-        self.nome = nome
-        self.conta = conta
-        self.saldo = saldo
-
-
-def crete_customer(customer: Customer) -> tuple[str, tuple[str, str, float]]:
-    return """
-    INSERT INTO DADOS_BANCARIOS(NOME, CONTA, SALDO) VALUES(:NOME, :CONTA, :SALDO)
-    """, (customer.nome, customer.conta, customer.saldo)
-
-
-def find_by_id(id: int) -> tuple:
-    return """
-    SELECT * FROM DADOS_BANCARIOS WHERE ID=:ID
-    """, (id, )
-
-
 def main():
 
     conexao: Connection | None = None
@@ -54,18 +40,15 @@ def main():
 
         cursor.executescript(create_tables())
 
-        id = cursor.execute(*crete_customer(Customer("Vitória Bianca Viana", "38353-9", 150.0))).rowcount
+        customer_repo = customer_repository(repository(cursor))
 
-        customer = cursor.execute(*find_by_id(id)).fetchone()
-
-        conexao.commit()
-
-
-        menu(conexao, cursor)
+        menu(get_account_user_case(customer_repo),
+             execute_transfer_use_case(customer_repo),
+             create_customer_user_case(customer_repo))
 
     except Exception:
 
-        print(traceback.print_exc())
+        traceback.print_exc()
 
         if conexao:
             conexao.rollback()
