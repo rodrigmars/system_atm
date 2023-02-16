@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Dict, TypedDict
 from config import system, name, Connection, connect, Cursor
 
 
@@ -54,6 +54,8 @@ def deposito(cursor, conta_usuario, saldo_usuario):
 
     print("Deposito efetuado com sucesso!")
 
+from dataclasses import dataclass
+
 
 def opcoes_finais():
 
@@ -69,6 +71,74 @@ def opcoes_finais():
 
     return opcao
 
+import re
+
+@dataclass(frozen=False)
+class CustomerDTO():
+    name: str
+    account: str
+    balance: str
+
+# class CustomerDictionary(TypedDict):
+#     nome: str
+#     conta: str
+#     saldo: str
+
+
+def check_fields(customer: dict) -> bool:
+
+    print(">>>>>>>>", customer)
+    
+    limpar_tela()
+
+    print("\n>>> Verificando formulário ... <<<")
+
+    fail = False
+
+    pattern_name = r'^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$'
+    
+    pattern_account = r'\d{5}-\d{1}$'
+
+    def isFloat(value):
+        try:
+            return True if float(value) else False
+        except:
+            return False
+
+    if len(customer["name"]) < 10:
+
+        fail = True if len(name :=
+                           input('\nNome deve possuir no mínimo 10 caracteres: ')
+                           .strip()) < 10 else False
+
+        customer.update({"name": name})
+
+    elif re.match(pattern_name, customer["name"]) is None:
+        
+        fail = True if re.match(pattern_name,
+                                name := input('\nNome deve possuir apenas caracteres válidos: ')
+                                .strip()) is None else False
+
+        customer.update({"name": name})
+
+    if re.match(pattern_account, customer["account"]) is None:
+
+        fail = True if re.match(pattern_account,
+                                account := input('\nConta deve obedecer o formato 00000-0: ')
+                                .strip()) is None else False
+
+        customer.update({"account": account})
+
+
+    if isFloat(customer["balance"]) is False:
+
+        fail = False if isFloat(balance := input('\nInforme um valor decimal para saldo: ')
+                                .strip()) else True
+
+        customer.update({"balance": balance})
+
+    return fail
+
 # Executando ATM
 
 
@@ -82,7 +152,7 @@ def menu(get_account_user_case: Callable[[str], str],
 
     limpar_tela()
 
-    print("""
+    roteiro = """
     
     SEJA BEM VINDO AO TERMINAL ATM - STARS***
     ....selecione uma opção
@@ -95,7 +165,9 @@ def menu(get_account_user_case: Callable[[str], str],
     6 - Cadastrar uma conta
     7 - Sair
 
-    """)
+    """
+
+    print(roteiro)
 
     while True:
 
@@ -165,31 +237,47 @@ def menu(get_account_user_case: Callable[[str], str],
                 pass
 
             case "6":
-                
+
+                limpar_tela()
+
+                print("\nIniciando cadastro de conta...")
+
+                customer = {'name':
+                            input('\nInforme um nome: ').strip(),
+                            'account':
+                            input('\nInforme uma conta no modelo 00000-0: ').strip(),
+                            'balance':
+                            input('\nInforme um saldo: ').strip()}
+
                 while True:
-                    
-                    name = input("\nInforme um nome:").strip()
-                    account = input("\nInforme uma conta:").strip()
-                    balance = input("\nInforme um saldo:").strip()
 
-                    fields = {"nome": name, "conta": account, "saldo": balance}
+                    if check_fields(customer) is True:
+                        
+                        limpar_tela()
 
-                    errors = []
+                        if input("\n>>> Foram identificadas ocorrências no cadastro de conta! <<<\
+                                 \nTecle ENTER para continuar ou [C] para cancelar e retornar o menu: ").upper() == "C":
+                            
+                            limpar_tela()
 
-                    for k, v in fields.items():
-                        if len(v) < 1:
-                            errors.append(f"Inform um valor para o campo {k}")
+                            print(roteiro)
 
-                    if errors != []:
-                        print("\nFalha no cadastro:", errors)
+                            break
 
-                        for erro in errors:
-                            print(erro)
                     else:
-                        create_customer_user_case(tuple(fields.values()))
 
-                        print(f"\nConta {account} cadastrada com sucesso")
-                        print("-----------------------------")
+
+                        create_customer_user_case((customer['name'],
+                                                   customer['account'],
+                                                   customer['balance']))
+
+                        limpar_tela()
+
+                        input(f"\nConta {customer['account']} cadastrada com sucesso!!!\nPressione qualquer tecla para retornar ao menu...")
+
+                        limpar_tela()
+                        
+                        print(roteiro)
 
                         break
 

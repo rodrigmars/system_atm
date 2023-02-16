@@ -42,9 +42,13 @@ def main():
 
         customer_repo = customer_repository(repository(cursor))
 
-        menu(get_account_user_case(customer_repo),
-             execute_transfer_use_case(customer_repo),
-             create_customer_user_case(customer_repo))
+        def container(repository: dict) -> tuple:
+
+            return get_account_user_case(repository), \
+                execute_transfer_use_case(repository), \
+                create_customer_user_case(repository)
+
+        menu(*container(customer_repo))
 
     except Exception:
 
