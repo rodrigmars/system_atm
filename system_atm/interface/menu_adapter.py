@@ -106,31 +106,34 @@ def check_fields(customer: dict) -> bool:
             return False
 
     if len(customer["name"]) < 10:
-        
+
         fail = True if len(name :=
-                            input('\nNome deve possuir no mínimo 10 caracteres: ').strip()) < 10 else False
+                           input('\nNome deve possuir no mínimo 10 caracteres: ')
+                           .strip()) < 10 else False
 
         customer.update({"name": name})
-        
+
     elif re.match(pattern_name, customer["name"]) is None:
         
         fail = True if re.match(pattern_name,
-                                name := input('\nNome deve possuir apenas caracteres válidos: ').strip()) is None else False
+                                name := input('\nNome deve possuir apenas caracteres válidos: ')
+                                .strip()) is None else False
 
         customer.update({"name": name})
 
     if re.match(pattern_account, customer["account"]) is None:
-        
+
         fail = True if re.match(pattern_account,
-                                            account := input('\nConta deve obedecer o formato 00000-0: ').strip()) is None else False
+                                account := input('\nConta deve obedecer o formato 00000-0: ')
+                                .strip()) is None else False
 
         customer.update({"account": account})
 
 
     if isFloat(customer["balance"]) is False:
 
-        fail = False if isFloat(
-            balance := input('\nInforme um valor decimal para saldo: ').strip()) else True
+        fail = False if isFloat(balance := input('\nInforme um valor decimal para saldo: ')
+                                .strip()) else True
 
         customer.update({"balance": balance})
 
