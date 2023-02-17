@@ -7,9 +7,9 @@ from adapters.inbound.menu_adapter import menu
 
 from adapters.outbound.repositories.customer_repository import customer_repository
 from adapters.outbound.repositories.repository import repository
-from application.ports.inside.customer.create_user_case import create_customer_user_case
-from application.ports.inside.customer.get_account_user_case import get_account_user_case
-from application.ports.inside.customer.execute_transfer_use_case import execute_transfer_use_case
+from system_atm.application.ports.inside.customer.create_port import create_customer_port
+from system_atm.application.ports.inside.customer.get_account_port import get_account_port
+from system_atm.application.ports.inside.customer.execute_transfer_port import execute_transfer_port
 
 def create_tables() -> str:
 
@@ -44,9 +44,9 @@ def main():
 
         def container(repository: dict) -> tuple:
 
-            return get_account_user_case(repository), \
-                execute_transfer_use_case(repository), \
-                create_customer_user_case(repository)
+            return get_account_port(repository), \
+                execute_transfer_port(repository), \
+                create_customer_port(repository)
 
         menu(*container(customer_repo))
 
