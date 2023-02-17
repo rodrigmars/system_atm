@@ -1,6 +1,7 @@
-def customer_repository(repository: dict) -> dict:
+def customer_adapter_repository(repository: dict) -> dict:
 
     def create(customer: tuple) -> int:
+        print(">>>>>>>>>>>>>>>3", tuple)
         query = """
         INSERT INTO DADOS_BANCARIOS(NOME, CONTA, SALDO) \
             VALUES(:NOME, :CONTA, :SALDO)

@@ -1,5 +1,5 @@
 
-def balance_repository_port(customer_adapter_repository: dict) -> dict:
+def balance_repository_outside_port(customer_adapter_repository: dict) -> dict:
 
     def check_balance(account: str) -> float:
         return customer_adapter_repository["check_balance"](account)

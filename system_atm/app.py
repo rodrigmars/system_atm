@@ -5,11 +5,16 @@ from config import Connection, connect
 
 from adapters.inbound.menu_adapter import menu
 
-from adapters.outbound.repositories.customer_repository import customer_repository
 from adapters.outbound.repositories.repository import repository
-from system_atm.application.ports.inside.customer.create_port import create_customer_port
-from system_atm.application.ports.inside.customer.get_account_port import get_account_port
-from system_atm.application.ports.inside.customer.execute_transfer_port import execute_transfer_port
+from adapters.outbound.repositories.customer_adapter_repository import customer_adapter_repository
+
+from application.ports.inside.customer.create_new_customer_inside_port import create_new_customer_inside_port
+from application.ports.inside.customer.get_account_inside_port import get_account_inside_port
+from application.ports.inside.customer.execute_transfer_inside_port import execute_transfer_inside_port
+
+from application.services.customer.create_new_customer_service import create_new_customer_service
+from application.ports.outside.customer.costumer_repository_outside_port import costumer_repository_outside_port
+
 
 def create_tables() -> str:
 
@@ -28,6 +33,7 @@ def create_tables() -> str:
     COMMIT;
     """
 
+
 def main():
 
     conexao: Connection | None = None
@@ -40,15 +46,16 @@ def main():
 
         cursor.executescript(create_tables())
 
-        customer_repo = customer_repository(repository(cursor))
-
         def container(repository: dict) -> tuple:
 
-            return get_account_port(repository), \
-                execute_transfer_port(repository), \
-                create_customer_port(repository)
+            return get_account_inside_port(repository), \
+                execute_transfer_inside_port(repository), \
+                create_new_customer_inside_port(
+                    create_new_customer_service(
+                        costumer_repository_outside_port(
+                            customer_adapter_repository(repository))))
 
-        menu(*container(customer_repo))
+        menu(*container(repository(cursor)))
 
     except Exception:
 
@@ -56,12 +63,13 @@ def main():
 
         if conexao:
             conexao.rollback()
-    
+
     finally:
 
         if conexao:
             conexao.close()
 
+
 if __name__ == "__main__":
-    
+
     main()

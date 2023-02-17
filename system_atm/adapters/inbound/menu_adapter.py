@@ -144,7 +144,7 @@ def check_fields(customer: dict) -> bool:
 
 def menu(get_account_user_case: Callable[[str], str],
          execute_transfer_use_case: Callable[[str, str, float], str],
-         create_customer_user_case: Callable[[tuple], None]):
+         create_customer_user_case: Callable[[tuple], int]):
 
     primary_account: str | None = None
 

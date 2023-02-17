@@ -1,7 +1,7 @@
 from typing import Callable
 
 
-def execute_transfer_port(repository: dict) -> Callable[[str, str, float], str]:
+def execute_transfer_inside_port(repository: dict) -> Callable[[str, str, float], str]:
 
     def check_balance(account: str) -> float:
         return repository["check_balance"](account)
