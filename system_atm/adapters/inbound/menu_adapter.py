@@ -142,9 +142,9 @@ def check_fields(customer: dict) -> bool:
 # Executando ATM
 
 
-def menu(get_account_user_case: Callable[[str], str],
-         execute_transfer_use_case: Callable[[str, str, float], str],
-         create_customer_user_case: Callable[[tuple], int]):
+def menu(create_new_customer_inside_port: Callable[[tuple], tuple],
+         get_account_inside_port: Callable[[tuple], tuple],
+         execute_transfer_inside_port: Callable[[str, str, float], str]) -> None:
 
     primary_account: str | None = None
 
@@ -181,15 +181,21 @@ def menu(get_account_user_case: Callable[[str], str],
 
                     primary_account = input(message).strip()
 
-                    primary_account = get_account_user_case(primary_account)
+                    if len(primary_account) < 7:
 
-                    if primary_account is None:
+                        message = "Conta necessária para pesquisa: "
 
-                        message = "Conta não localizada! Digite novamente: "
+                    else:
 
-                    if i >= 2:
-                        raise Exception(
-                            "Favor entrar em contato com sua agência!")
+                        account = get_account_inside_port(
+                            tuple(primary_account))
+
+                        if account is None:
+                            message = "Conta não localizada! Digite novamente: "
+
+                        if i >= 2:
+                            raise Exception(
+                                "Favor entrar em contato com sua agência!")
 
             case "2":
 
@@ -201,11 +207,11 @@ def menu(get_account_user_case: Callable[[str], str],
                     valor_transferencia = input(
                         "Digite o valor que seja transferir: ").strip()
 
-                    response = execute_transfer_use_case(primary_account,
+                    customer = execute_transfer_inside_port(primary_account,
                                                          secondary_account,
                                                          float(valor_transferencia))
 
-                    print(response)
+                    print(customer)
 
                 else:
                     print("Informe sua conta para transferência")
@@ -267,7 +273,7 @@ def menu(get_account_user_case: Callable[[str], str],
                     else:
 
 
-                        create_customer_user_case((customer['name'],
+                        create_new_customer_inside_port((customer['name'],
                                                    customer['account'],
                                                    customer['balance']))
 
