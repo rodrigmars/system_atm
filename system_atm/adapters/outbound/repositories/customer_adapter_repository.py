@@ -1,26 +1,23 @@
-from domain.entities.customer import Customer
+def customer_adapter_repository(repository: dict) -> dict:
 
-
-def customer_repository(repository: dict) -> dict:
-
-    def create(customer: tuple) -> int:
+    def create(customer: tuple) -> tuple:
         query = """
         INSERT INTO DADOS_BANCARIOS(NOME, CONTA, SALDO) \
             VALUES(:NOME, :CONTA, :SALDO)
         """
-        return repository["execute"](query, customer).rowcount
+        return repository["execute"](query, customer).rowcount,
 
-    def find_by_id(id: int) -> tuple:
+    def find_by_id(id: tuple) -> tuple:
 
         return repository["fetchone"]("""
         SELECT * FROM DADOS_BANCARIOS WHERE ID=:ID
-        """, (id, ))
+        """, id)
 
-    def find_by_account(bank_account: str) -> str:
+    def find_by_account(bank_account: tuple) -> tuple:
 
         query = "SELECT CONTA FROM DADOS_BANCARIOS WHERE CONTA =:CONTA"
 
-        return repository["fetchone"](query, (bank_account,))
+        return repository["fetchone"](query, bank_account)
 
     def update_balance(account: str, balance: float) -> None:
 

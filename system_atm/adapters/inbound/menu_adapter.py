@@ -1,3 +1,5 @@
+import re
+from dataclasses import dataclass
 from typing import Callable, Dict, TypedDict
 from config import system, name, Connection, connect, Cursor
 
@@ -54,8 +56,6 @@ def deposito(cursor, conta_usuario, saldo_usuario):
 
     print("Deposito efetuado com sucesso!")
 
-from dataclasses import dataclass
-
 
 def opcoes_finais():
 
@@ -71,7 +71,6 @@ def opcoes_finais():
 
     return opcao
 
-import re
 
 @dataclass(frozen=False)
 class CustomerDTO():
@@ -87,8 +86,6 @@ class CustomerDTO():
 
 def check_fields(customer: dict) -> bool:
 
-    print(">>>>>>>>", customer)
-    
     limpar_tela()
 
     print("\n>>> Verificando formulário ... <<<")
@@ -96,7 +93,7 @@ def check_fields(customer: dict) -> bool:
     fail = False
 
     pattern_name = r'^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$'
-    
+
     pattern_account = r'\d{5}-\d{1}$'
 
     def isFloat(value):
@@ -114,7 +111,7 @@ def check_fields(customer: dict) -> bool:
         customer.update({"name": name})
 
     elif re.match(pattern_name, customer["name"]) is None:
-        
+
         fail = True if re.match(pattern_name,
                                 name := input('\nNome deve possuir apenas caracteres válidos: ')
                                 .strip()) is None else False
@@ -129,7 +126,6 @@ def check_fields(customer: dict) -> bool:
 
         customer.update({"account": account})
 
-
     if isFloat(customer["balance"]) is False:
 
         fail = False if isFloat(balance := input('\nInforme um valor decimal para saldo: ')
@@ -142,9 +138,9 @@ def check_fields(customer: dict) -> bool:
 # Executando ATM
 
 
-def menu(get_account_user_case: Callable[[str], str],
-         execute_transfer_use_case: Callable[[str, str, float], str],
-         create_customer_user_case: Callable[[tuple], None]):
+def menu(create_new_customer_inside_port: Callable[[tuple], tuple],
+         get_account_inside_port: Callable[[tuple], tuple],
+         execute_transfer_inside_port: Callable[[str, str, float], str]) -> None:
 
     primary_account: str | None = None
 
@@ -175,21 +171,26 @@ def menu(get_account_user_case: Callable[[str], str],
 
             case "1":
 
-                message = "Informe uma conta válida: "
+                message = "\nInforme uma conta válida: "
 
                 for i in range(3):
 
                     primary_account = input(message).strip()
 
-                    primary_account = get_account_user_case(primary_account)
+                    if len(primary_account) < 7:
 
-                    if primary_account is None:
+                        message = "\nConta necessária para pesquisa: "
 
-                        message = "Conta não localizada! Digite novamente: "
+                    else:
 
-                    if i >= 2:
-                        raise Exception(
-                            "Favor entrar em contato com sua agência!")
+                        account = get_account_inside_port((primary_account,))
+
+                        if account is None:
+                            message = "\nConta não localizada! Digite novamente: "
+
+                        if i >= 2:
+                            raise Exception(
+                                "Favor entrar em contato com sua agência!")
 
             case "2":
 
@@ -201,11 +202,11 @@ def menu(get_account_user_case: Callable[[str], str],
                     valor_transferencia = input(
                         "Digite o valor que seja transferir: ").strip()
 
-                    response = execute_transfer_use_case(primary_account,
-                                                         secondary_account,
-                                                         float(valor_transferencia))
+                    customer = execute_transfer_inside_port(primary_account,
+                                                            secondary_account,
+                                                            float(valor_transferencia))
 
-                    print(response)
+                    print(customer)
 
                 else:
                     print("Informe sua conta para transferência")
@@ -252,12 +253,12 @@ def menu(get_account_user_case: Callable[[str], str],
                 while True:
 
                     if check_fields(customer) is True:
-                        
+
                         limpar_tela()
 
                         if input("\n>>> Foram identificadas ocorrências no cadastro de conta! <<<\
                                  \nTecle ENTER para continuar ou [C] para cancelar e retornar o menu: ").upper() == "C":
-                            
+
                             limpar_tela()
 
                             print(roteiro)
@@ -266,17 +267,17 @@ def menu(get_account_user_case: Callable[[str], str],
 
                     else:
 
+                        create_new_customer_inside_port((customer['name'],
+                                                         customer['account'],
+                                                         customer['balance']))
 
-                        create_customer_user_case((customer['name'],
-                                                   customer['account'],
-                                                   customer['balance']))
+                        limpar_tela()
+
+                        input(
+                            f"\nConta {customer['account']} cadastrada com sucesso!!!\nPressione qualquer tecla para retornar ao menu...")
 
                         limpar_tela()
 
-                        input(f"\nConta {customer['account']} cadastrada com sucesso!!!\nPressione qualquer tecla para retornar ao menu...")
-
-                        limpar_tela()
-                        
                         print(roteiro)
 
                         break
