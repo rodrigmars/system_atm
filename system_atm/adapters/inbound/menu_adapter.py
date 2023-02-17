@@ -86,8 +86,6 @@ class CustomerDTO():
 
 def check_fields(customer: dict) -> bool:
 
-    print(">>>>>>>>", customer)
-
     limpar_tela()
 
     print("\n>>> Verificando formulário ... <<<")
