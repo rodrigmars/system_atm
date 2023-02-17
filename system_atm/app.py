@@ -3,13 +3,13 @@ import traceback
 
 from config import Connection, connect
 
-from interface.menu_adapter import menu
-from infrastructure.repositories.customer_repository import customer_repository
-from infrastructure.repositories.repository import repository
-from application.usercases.customer.create_user_case import create_customer_user_case
-from application.usercases.customer.get_account_user_case import get_account_user_case
-from application.usercases.customer.execute_transfer_use_case import execute_transfer_use_case
+from adapters.inbound.menu_adapter import menu
 
+from adapters.outbound.repositories.customer_repository import customer_repository
+from adapters.outbound.repositories.repository import repository
+from application.ports.inside.customer.create_user_case import create_customer_user_case
+from application.ports.inside.customer.get_account_user_case import get_account_user_case
+from application.ports.inside.customer.execute_transfer_use_case import execute_transfer_use_case
 
 def create_tables() -> str:
 
