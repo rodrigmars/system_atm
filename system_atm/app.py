@@ -22,11 +22,9 @@ from application.ports.outside.customer.get_account_outside_port import get_acco
 
 
 def create_tables() -> str:
-
+    # DROP TABLE IF EXISTS DADOS_BANCARIOS;
     return """
     BEGIN;
-
-    DROP TABLE IF EXISTS DADOS_BANCARIOS;
 
     CREATE TABLE IF NOT EXISTS DADOS_BANCARIOS (
         ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -45,7 +43,7 @@ def main():
 
     try:
 
-        conexao = connect("Dados.db")
+        conexao = connect("atm_stars.db")
 
         cursor = conexao.cursor()
 
@@ -55,20 +53,20 @@ def main():
 
             customer_adapter = customer_adapter_repository(repository)
 
-            create_new_customer_inside_port_ = create_new_customer_inside_port(
+            create_new_customer_injector = create_new_customer_inside_port(
                 create_new_customer_service(
                     costumer_repository_outside_port(customer_adapter)))
 
-            get_account_inside_port_ = get_account_inside_port(
+            get_account_inside_injector = get_account_inside_port(
                 get_account_service(
                     get_account_outside_port(customer_adapter)))
 
-            execute_transfer_inside_port_ = execute_transfer_inside_port(
+            execute_transfer_injector = execute_transfer_inside_port(
                 customer_adapter)
 
-            return create_new_customer_inside_port_, \
-                get_account_inside_port_, \
-                execute_transfer_inside_port_
+            return create_new_customer_injector, \
+                get_account_inside_injector, \
+                execute_transfer_injector
 
         menu(*container(repository(cursor)))
 

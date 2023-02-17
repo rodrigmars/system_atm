@@ -1,3 +1,5 @@
+import re
+from dataclasses import dataclass
 from typing import Callable, Dict, TypedDict
 from config import system, name, Connection, connect, Cursor
 
@@ -54,8 +56,6 @@ def deposito(cursor, conta_usuario, saldo_usuario):
 
     print("Deposito efetuado com sucesso!")
 
-from dataclasses import dataclass
-
 
 def opcoes_finais():
 
@@ -71,7 +71,6 @@ def opcoes_finais():
 
     return opcao
 
-import re
 
 @dataclass(frozen=False)
 class CustomerDTO():
@@ -88,7 +87,7 @@ class CustomerDTO():
 def check_fields(customer: dict) -> bool:
 
     print(">>>>>>>>", customer)
-    
+
     limpar_tela()
 
     print("\n>>> Verificando formulário ... <<<")
@@ -96,7 +95,7 @@ def check_fields(customer: dict) -> bool:
     fail = False
 
     pattern_name = r'^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$'
-    
+
     pattern_account = r'\d{5}-\d{1}$'
 
     def isFloat(value):
@@ -114,7 +113,7 @@ def check_fields(customer: dict) -> bool:
         customer.update({"name": name})
 
     elif re.match(pattern_name, customer["name"]) is None:
-        
+
         fail = True if re.match(pattern_name,
                                 name := input('\nNome deve possuir apenas caracteres válidos: ')
                                 .strip()) is None else False
@@ -128,7 +127,6 @@ def check_fields(customer: dict) -> bool:
                                 .strip()) is None else False
 
         customer.update({"account": account})
-
 
     if isFloat(customer["balance"]) is False:
 
@@ -175,7 +173,7 @@ def menu(create_new_customer_inside_port: Callable[[tuple], tuple],
 
             case "1":
 
-                message = "Informe uma conta válida: "
+                message = "\nInforme uma conta válida: "
 
                 for i in range(3):
 
@@ -183,15 +181,14 @@ def menu(create_new_customer_inside_port: Callable[[tuple], tuple],
 
                     if len(primary_account) < 7:
 
-                        message = "Conta necessária para pesquisa: "
+                        message = "\nConta necessária para pesquisa: "
 
                     else:
 
-                        account = get_account_inside_port(
-                            tuple(primary_account))
+                        account = get_account_inside_port((primary_account,))
 
                         if account is None:
-                            message = "Conta não localizada! Digite novamente: "
+                            message = "\nConta não localizada! Digite novamente: "
 
                         if i >= 2:
                             raise Exception(
@@ -208,8 +205,8 @@ def menu(create_new_customer_inside_port: Callable[[tuple], tuple],
                         "Digite o valor que seja transferir: ").strip()
 
                     customer = execute_transfer_inside_port(primary_account,
-                                                         secondary_account,
-                                                         float(valor_transferencia))
+                                                            secondary_account,
+                                                            float(valor_transferencia))
 
                     print(customer)
 
@@ -258,12 +255,12 @@ def menu(create_new_customer_inside_port: Callable[[tuple], tuple],
                 while True:
 
                     if check_fields(customer) is True:
-                        
+
                         limpar_tela()
 
                         if input("\n>>> Foram identificadas ocorrências no cadastro de conta! <<<\
                                  \nTecle ENTER para continuar ou [C] para cancelar e retornar o menu: ").upper() == "C":
-                            
+
                             limpar_tela()
 
                             print(roteiro)
@@ -272,17 +269,17 @@ def menu(create_new_customer_inside_port: Callable[[tuple], tuple],
 
                     else:
 
-
                         create_new_customer_inside_port((customer['name'],
-                                                   customer['account'],
-                                                   customer['balance']))
+                                                         customer['account'],
+                                                         customer['balance']))
 
                         limpar_tela()
 
-                        input(f"\nConta {customer['account']} cadastrada com sucesso!!!\nPressione qualquer tecla para retornar ao menu...")
+                        input(
+                            f"\nConta {customer['account']} cadastrada com sucesso!!!\nPressione qualquer tecla para retornar ao menu...")
 
                         limpar_tela()
-                        
+
                         print(roteiro)
 
                         break
