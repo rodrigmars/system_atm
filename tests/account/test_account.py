@@ -28,3 +28,33 @@ def test_check_second_account_exists(account_generator) -> None:
 def test_check_three_account_exists(account_generator) -> None:
     accounts = list(account_generator)
     assert len(accounts[2][3]) == 7
+
+
+def test_check_if_first_account_has_hyphen(account_generator: Iterator[Dict[int, str]]) -> None:
+    accounts = list(account_generator)
+    assert accounts[0][1][5:6].__eq__("-")
+
+
+def test_check_if_second_account_has_hyphen(account_generator: Iterator[Dict[int, str]]) -> None:
+    accounts = list(account_generator)
+    assert accounts[1][2][5:6].__eq__("-")
+
+
+def test_check_if_three_account_has_hyphen(account_generator: Iterator[Dict[int, str]]) -> None:
+    accounts = list(account_generator)
+    assert accounts[2][3][5:6].__eq__("-")
+
+
+def test_check_if_first_account_has_check_digit(account_generator: Iterator[Dict[int, str]]) -> None:
+    accounts = list(account_generator)
+    assert accounts[0][1].split("-")[1].__len__() == 1
+
+
+def test_check_if_second_account_has_check_digit(account_generator: Iterator[Dict[int, str]]) -> None:
+    accounts = list(account_generator)
+    assert accounts[1][2].split("-")[1].__len__() == 1
+
+
+def test_check_if_three_account_has_check_digit(account_generator: Iterator[Dict[int, str]]) -> None:
+    accounts = list(account_generator)
+    assert accounts[2][3].split("-")[1].__len__() == 1
