@@ -1,4 +1,5 @@
 import re
+import random
 from dataclasses import dataclass
 from typing import Callable, Dict, TypedDict
 from config import system, name, Connection, connect, Cursor
@@ -138,9 +139,142 @@ def check_fields(customer: dict) -> bool:
 # Executando ATM
 
 
+# def account_generator():
+    # for i in range(3):
+    #     yield {i + 1:
+    #            f"{random.randint(1, 99999):05}-{random.randint(1, 9)}"}
+
+def account_generator():
+    return [{i+1: f"{random.randint(1, 99999):05}-{random.randint(1, 9)}"} for i in range(3)]
+
+
+for i in account_generator():
+    print(i)
+
+def main_menu(get_account: Callable[[tuple], tuple], 
+              create_new_account: Callable[[tuple], tuple]) -> dict | None:
+
+    customer = {}
+
+    script = "\nSEJA BEM VINDO AO TERMINAL ATM - STARS***\
+          \n\n\
+          1 > Acessar conta\n\
+          2 + Cadastrar conta\n\
+          3 - Sair"
+
+    print(script)
+
+    while True:
+
+        match input("\nSelecione uma opção:_").strip():
+
+            case "1":
+
+                limpar_tela()
+
+                primary_account: str | None = None
+
+                message = "\nInforme uma conta válida:_"
+
+                for i in range(3):
+
+                    primary_account = input(message).strip()
+
+                    if len(primary_account) < 7:
+
+                        message = "\nInforme uma conta válida para pesquisa:_"
+
+                    else:
+
+                        account = get_account((primary_account,))
+
+                        if account is None:
+                            message = "\nConta não localizada! Digite novamente:_"
+
+                        if i >= 2:
+                            raise Exception(
+                                "Favor entrar em contato com sua agência!")
+                
+                if primary_account is None:
+                    input(
+                        "\n!!!Conta não identificada, acione qualquer tecla para retornar ao menu:_")
+                    break
+
+                name = ""
+                account = ""
+
+                customer = {'name': name,
+                            'account': account}
+            case "2":
+
+                limpar_tela()
+
+                print("\nIniciando cadastro de conta...")
+
+                
+
+                    # print(f"\n{code} - Conta:{account}")
+
+                    return input('Selencione uma das três contas geradas:_')
+
+                customer = {'account': account_generator(),
+                            'name': input('\nInforme um nome:_').strip(),
+                            'balance': input('\nInforme um saldo:_').strip()}
+
+                # while True:
+
+                #     if check_fields(customer) is True:
+
+                #         limpar_tela()
+
+                #         if input("\n>>> Foram identificadas ocorrências no cadastro de conta! <<<\
+                #                  \nTecle ENTER para continuar ou [C] para cancelar e retornar o menu: ").upper() == "C":
+
+                #             limpar_tela()
+
+                #             print(script)
+
+                #             break
+
+                #     else:
+
+                       
+
+                #         account = account_generator_bot()
+
+                #         create_new_account((customer['name'],
+                #                             customer['account'],
+                #                             customer['balance']))
+
+                #         limpar_tela()
+
+                #         input(
+                #             f"\nConta {customer['account']} cadastrada com sucesso!!!\nPressione qualquer tecla para retornar ao menu...")
+
+                #         limpar_tela()
+
+                #         print(script)
+
+                #         break
+
+                # name = ""
+                # account = ""
+
+                # customer = {'name': name,
+                #             'account': account}
+            case "3":
+                break
+
+    return customer if customer else None
+
 def menu(create_new_customer_inside_port: Callable[[tuple], tuple],
          get_account_inside_port: Callable[[tuple], tuple],
          execute_transfer_inside_port: Callable[[str, str, float], str]) -> None:
+
+    limpar_tela()
+
+    main_menu(get_account_inside_port, create_new_customer_inside_port)
+    return 
 
     primary_account: str | None = None
 
