@@ -1,5 +1,4 @@
 import re
-import random
 from dataclasses import dataclass
 from typing import Callable, Dict, TypedDict
 from config import system, name, Connection, connect, Cursor
@@ -138,20 +137,11 @@ def check_fields(customer: dict) -> bool:
 
 # Executando ATM
 
+        # account = {i + 1:
+        #            f"{random.randint(1, 99999):05}-{random.randint(1, 9)}"}
 
-# def account_generator():
-    # for i in range(3):
-    #     yield {i + 1:
-    #            f"{random.randint(1, 99999):05}-{random.randint(1, 9)}"}
-
-def account_generator():
-    return [{i+1: f"{random.randint(1, 99999):05}-{random.randint(1, 9)}"} for i in range(3)]
-
-
-for i in account_generator():
-    print(i)
-
-def main_menu(get_account: Callable[[tuple], tuple], 
+def main_menu(account_generator: Callable[[tuple], tuple],
+              get_account: Callable[[tuple], tuple],
               create_new_account: Callable[[tuple], tuple]) -> dict | None:
 
     customer = {}
@@ -211,15 +201,26 @@ def main_menu(get_account: Callable[[tuple], tuple],
 
                 print("\nIniciando cadastro de conta...")
 
-                
+                account = "15215-5"
 
-                    # print(f"\n{code} - Conta:{account}")
+                response = account_generator((account,))
 
-                    return input('Selencione uma das três contas geradas:_')
+                print("response:", response)
 
-                customer = {'account': account_generator(),
-                            'name': input('\nInforme um nome:_').strip(),
-                            'balance': input('\nInforme um saldo:_').strip()}
+                # print(f"\n{code} - Conta:{account}")
+
+                input('Pressione qualquer tecla para retornar ao menu:_')
+
+                limpar_tela()
+
+                print(script)
+
+                # return input('Selencione uma das três contas geradas:_')
+
+
+                # customer = {'account': account_generator(),
+                #             'name': input('\nInforme um nome:_').strip(),
+                #             'balance': input('\nInforme um saldo:_').strip()}
 
                 # while True:
 
@@ -267,13 +268,16 @@ def main_menu(get_account: Callable[[tuple], tuple],
 
     return customer if customer else None
 
-def menu(create_new_customer_inside_port: Callable[[tuple], tuple],
+
+def menu(account_generator_inside_port: Callable[[tuple], tuple],
+         create_new_customer_inside_port: Callable[[tuple], tuple],
          get_account_inside_port: Callable[[tuple], tuple],
          execute_transfer_inside_port: Callable[[str, str, float], str]) -> None:
 
     limpar_tela()
 
-    main_menu(get_account_inside_port, create_new_customer_inside_port)
+    main_menu(account_generator_inside_port, get_account_inside_port, create_new_customer_inside_port)
+    
     return 
 
     primary_account: str | None = None
