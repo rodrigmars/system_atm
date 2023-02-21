@@ -186,11 +186,11 @@ def main_menu(account_generator: Callable[[], tuple],
                         "\n!!!Conta não identificada, acione qualquer tecla para retornar ao menu:_")
                     break
 
-                name = ""
-                account = ""
+                # name = ""
+                # account = ""
 
-                customer = {'name': name,
-                            'account': account}
+                # customer = {'name': name,
+                #             'account': account}
             case "2":
 
                 clear_screen()
@@ -199,83 +199,51 @@ def main_menu(account_generator: Callable[[], tuple],
 
                 accounts = account_generator()
 
-                # account: dict
-
-                # for account in accounts:
-                #     print(f"{str(*account.keys())} - {str(*account.values())}")
-
-                [print(f"{str(*account.keys())} - {str(*account.values())}")
-                 for account in accounts]
+                for account in accounts:
+                    print(f"{str(*account.keys())} - {str(*account.values())}")
 
                 num_account = input(
-                    'Selecione uma das contas geradas:_').split(),
-                name = input('Informe um nome para cliente:_').split(),
-                balance = input('Informe um valor:_').split()
+                    'Selecione uma das contas geradas:_').strip()
+
+                name = input('Informe um nome para cliente:_').strip()
+
+                balance = input('Informe um valor:_').strip()
 
                 while True:
 
-                    if not create_new_account(*(num_account, name, balance, accounts)):
+                    create, occurrences, account = create_new_account(
+                        (num_account, name, balance, accounts))
 
-                        if (occurrences := check_fields(*(num_account, name, balance))) != []:
+                    if create is False:
 
-                            if occurrences["account_num"]:
-                                num_account = input(
-                                    'Selecione uma das contas geradas:_').split()
+                        if occurrences.get("account_num") is not None:
+                            num_account = input(
+                                f'{occurrences["account_num"]}:_').strip()
 
-                            elif occurrences["name"]:
-                                name = input(
-                                    'Informe um nome para cliente:_').split()
+                        elif occurrences.get("name") is not None:
+                            name = input(f'{occurrences["name"]}:_').strip()
 
-                            elif occurrences["balance"]:
-                                balance = input('Informe um valor:_').split()
+                        elif occurrences.get("balance") is not None:
+                            balance = input(
+                                f'{occurrences["balance"]}:_').strip()
 
-                # return input('Selencione uma das três contas geradas:_')
+                    else:
+                        # clear_screen()
 
-                # customer = {'account': account_generator(),
-                #             'name': input('\nInforme um nome:_').strip(),
-                #             'balance': input('\nInforme um saldo:_').strip()}
+                        input(
+                            f"\nConta {account} cadastrada com sucesso!!!\nPressione qualquer tecla para retornar ao menu...")
 
-                # while True:
+                        # clear_screen()
 
-                #     if check_fields(customer) is True:
+                        print(script)
 
-                #         limpar_tela()
+                        break
+                break
 
-                #         if input("\n>>> Foram identificadas ocorrências no cadastro de conta! <<<\
-                #                  \nTecle ENTER para continuar ou [C] para cancelar e retornar o menu: ").upper() == "C":
-
-                #             limpar_tela()
-
-                #             print(script)
-
-                #             break
-
-                #     else:
-
-                #         account = account_generator_bot()
-
-                #         create_new_account((customer['name'],
-                #                             customer['account'],
-                #                             customer['balance']))
-
-                #         limpar_tela()
-
-                #         input(
-                #             f"\nConta {customer['account']} cadastrada com sucesso!!!\nPressione qualquer tecla para retornar ao menu...")
-
-                #         limpar_tela()
-
-                #         print(script)
-
-                #         break
-
-                # name = ""
-                # account = ""
-
-                # customer = {'name': name,
-                #             'account': account}
             case "3":
                 break
+
+        break
 
     return customer if customer else None
 

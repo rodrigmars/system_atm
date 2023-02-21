@@ -11,27 +11,29 @@ def account_validation():
         except:
             return False
 
-    def check_fields(account_num: str, name: str, balance: str) -> list:
+    def check_fields(account_num: str, name: str, balance: str) -> dict:
 
-        occurrences: list = []
+        occurrences: dict = {}
 
-        if account_num not in (1, 2, 3):
+        
 
-            occurrences.append(
+        if account_num not in ("1", "2", "3"):
+
+            occurrences.update(
                 {"account_num": "Selecione uma conta válida"})
 
         if len(name) < 10:
-            occurrences.append(
+            occurrences.update(
                 {"name": "Nome deve possuir no mínimo 10 caracteres"})
 
         elif re.match(pattern_name, name) is None:
 
-            occurrences.append(
+            occurrences.update(
                 {"name": "Nome deve possuir apenas caracteres válidos"})
 
         if isFloat(balance) is False:
 
-            occurrences.append(
+            occurrences.update(
                 {"balance": "Informe um saldo correto"})
 
         return occurrences
