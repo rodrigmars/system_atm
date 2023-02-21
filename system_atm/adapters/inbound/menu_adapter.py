@@ -4,7 +4,7 @@ from typing import Callable, Dict, TypedDict
 from config import system, name, Connection, connect, Cursor
 
 
-def limpar_tela():
+def clear_screen():
 
     system('cls') if name.lower() == 'nt' else system('clear')
 
@@ -37,7 +37,7 @@ def saque(cursor, conta_usuario, saldo_usuario):
 
         print("Saque efetuado com sucesso!")
 
-        limpar_tela()
+        clear_screen()
 
     else:
         print("Saldo insuficiente!")
@@ -86,7 +86,7 @@ class CustomerDTO():
 
 def check_fields(customer: dict) -> bool:
 
-    limpar_tela()
+    clear_screen()
 
     print("\n>>> Verificando formulário ... <<<")
 
@@ -135,12 +135,8 @@ def check_fields(customer: dict) -> bool:
 
     return fail
 
-# Executando ATM
 
-        # account = {i + 1:
-        #            f"{random.randint(1, 99999):05}-{random.randint(1, 9)}"}
-
-def main_menu(account_generator: Callable[[tuple], tuple],
+def main_menu(account_generator: Callable[[], tuple],
               get_account: Callable[[tuple], tuple],
               create_new_account: Callable[[tuple], tuple]) -> dict | None:
 
@@ -160,7 +156,7 @@ def main_menu(account_generator: Callable[[tuple], tuple],
 
             case "1":
 
-                limpar_tela()
+                clear_screen()
 
                 primary_account: str | None = None
 
@@ -184,7 +180,7 @@ def main_menu(account_generator: Callable[[tuple], tuple],
                         if i >= 2:
                             raise Exception(
                                 "Favor entrar em contato com sua agência!")
-                
+
                 if primary_account is None:
                     input(
                         "\n!!!Conta não identificada, acione qualquer tecla para retornar ao menu:_")
@@ -197,26 +193,43 @@ def main_menu(account_generator: Callable[[tuple], tuple],
                             'account': account}
             case "2":
 
-                limpar_tela()
+                clear_screen()
 
                 print("\nIniciando cadastro de conta...")
 
-                account = "15215-5"
+                accounts = account_generator()
 
-                response = account_generator((account,))
+                # account: dict
 
-                print("response:", response)
+                # for account in accounts:
+                #     print(f"{str(*account.keys())} - {str(*account.values())}")
 
-                # print(f"\n{code} - Conta:{account}")
+                [print(f"{str(*account.keys())} - {str(*account.values())}")
+                 for account in accounts]
 
-                input('Pressione qualquer tecla para retornar ao menu:_')
+                num_account = input(
+                    'Selecione uma das contas geradas:_').split(),
+                name = input('Informe um nome para cliente:_').split(),
+                balance = input('Informe um valor:_').split()
 
-                limpar_tela()
+                while True:
 
-                print(script)
+                    if not create_new_account(*(num_account, name, balance, accounts)):
+
+                        if (occurrences := check_fields(*(num_account, name, balance))) != []:
+
+                            if occurrences["account_num"]:
+                                num_account = input(
+                                    'Selecione uma das contas geradas:_').split()
+
+                            elif occurrences["name"]:
+                                name = input(
+                                    'Informe um nome para cliente:_').split()
+
+                            elif occurrences["balance"]:
+                                balance = input('Informe um valor:_').split()
 
                 # return input('Selencione uma das três contas geradas:_')
-
 
                 # customer = {'account': account_generator(),
                 #             'name': input('\nInforme um nome:_').strip(),
@@ -238,8 +251,6 @@ def main_menu(account_generator: Callable[[tuple], tuple],
                 #             break
 
                 #     else:
-
-                       
 
                 #         account = account_generator_bot()
 
@@ -269,22 +280,24 @@ def main_menu(account_generator: Callable[[tuple], tuple],
     return customer if customer else None
 
 
-def menu(account_generator_inside_port: Callable[[tuple], tuple],
+def menu(account_generator_inside_port: Callable[[], tuple],
          create_new_customer_inside_port: Callable[[tuple], tuple],
          get_account_inside_port: Callable[[tuple], tuple],
          execute_transfer_inside_port: Callable[[str, str, float], str]) -> None:
 
-    limpar_tela()
+    clear_screen()
 
-    main_menu(account_generator_inside_port, get_account_inside_port, create_new_customer_inside_port)
-    
-    return 
+    main_menu(account_generator_inside_port,
+              get_account_inside_port,
+              create_new_customer_inside_port)
+
+    return
 
     primary_account: str | None = None
 
     total_attempts = 0
 
-    limpar_tela()
+    clear_screen()
 
     roteiro = """
     
@@ -351,7 +364,7 @@ def menu(account_generator_inside_port: Callable[[tuple], tuple],
 
             case "3":
 
-                limpar_tela()
+                clear_screen()
 
                 # saque(cursor,
                 #       primary_account,
@@ -377,7 +390,7 @@ def menu(account_generator_inside_port: Callable[[tuple], tuple],
 
             case "6":
 
-                limpar_tela()
+                clear_screen()
 
                 print("\nIniciando cadastro de conta...")
 
@@ -392,12 +405,12 @@ def menu(account_generator_inside_port: Callable[[tuple], tuple],
 
                     if check_fields(customer) is True:
 
-                        limpar_tela()
+                        clear_screen()
 
                         if input("\n>>> Foram identificadas ocorrências no cadastro de conta! <<<\
                                  \nTecle ENTER para continuar ou [C] para cancelar e retornar o menu: ").upper() == "C":
 
-                            limpar_tela()
+                            clear_screen()
 
                             print(roteiro)
 
@@ -409,12 +422,12 @@ def menu(account_generator_inside_port: Callable[[tuple], tuple],
                                                          customer['account'],
                                                          customer['balance']))
 
-                        limpar_tela()
+                        clear_screen()
 
                         input(
                             f"\nConta {customer['account']} cadastrada com sucesso!!!\nPressione qualquer tecla para retornar ao menu...")
 
-                        limpar_tela()
+                        clear_screen()
 
                         print(roteiro)
 

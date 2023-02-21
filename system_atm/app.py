@@ -11,6 +11,7 @@ from adapters.inbound.menu_adapter import menu
 
 from adapters.outbound.repositories.repository import repository
 
+
 def main():
 
     conexao: Connection | None = None

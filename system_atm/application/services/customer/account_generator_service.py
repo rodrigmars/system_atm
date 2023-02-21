@@ -1,6 +1,7 @@
 from typing import Callable
 import random
 
+
 def account_generator_service(get_account_inside_outside_port: Callable[[tuple], tuple]) -> Callable[[], tuple]:
 
     def account_generator() -> tuple:
@@ -27,7 +28,7 @@ def account_generator_service(get_account_inside_outside_port: Callable[[tuple],
 
             if get_account_inside_outside_port((account := f"{random.randint(1, 99999):05}-{random.randint(1, 9)}",)) is None:
                 i += 1
-                accounts.append({i+1: account})
+                accounts.append({i: account})
 
         return tuple(accounts)
 
